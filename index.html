@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVP за 3 дня</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top left, #0f0f0f, #181818);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    header {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      height: 100vh;
+      padding: 0 20px;
+    }
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p.subtitle {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #ccc;
+    }
+	.glow-button {
+		margin-top: 20px;
+		position: relative;
+		padding: 15px 50px;
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: #fff;
+		background: linear-gradient(135deg, #00f260, #0575e6);
+		border: none;
+		border-radius: 50px;
+		cursor: pointer;
+		box-shadow: 0 0 15px rgba(0, 255, 150, 0.3);
+		transition: all 0.3s ease;
+		overflow: hidden;
+		z-index: 1;
+	}
+
+	.glow-button::before {
+		content: "";
+		position: absolute;
+		top: -50%;
+		left: -50%;
+		width: 200%;
+		height: 200%;
+		background: radial-gradient(circle, rgba(0,255,200,0.25) 0%, transparent 70%);
+		animation: pulse-glow 2s infinite;
+		z-index: 0;
+	}
+
+	.glow-button:hover {
+		transform: scale(1.05);
+		box-shadow: 0 0 25px rgba(0, 255, 150, 0.6), 0 0 40px rgba(0, 100, 255, 0.3);
+	}
+
+	.glow-button:active {
+		transform: scale(0.98);
+	}
+
+	@keyframes pulse-glow {
+	0% {
+		transform: scale(1);
+		opacity: 0.7;
+	}
+	50% {
+		transform: scale(1.1);
+		opacity: 0.3;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 0.7;
+	}
+	}
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      padding: 60px 20px;
+      background: #121212;
+    }
+    .feature {
+      flex: 1 1 250px;
+      max-width: 300px;
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+    .feature:hover {
+      transform: translateY(-10px);
+    }
+    .feature h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #00c6ff;
+    }
+    .feature p {
+      font-size: 1rem;
+      color: #aaa;
+    }
+    .video-preview {
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .video-preview iframe {
+      max-width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .telegram-widget {
+      padding: 40px 20px;
+      text-align: center;
+    }
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      background: #0f0f0f;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header data-aos="fade-down">
+    <h1>🚀 MVP за 3 дня</h1>
+    <p class="subtitle">Лендинг, Telegram-бот и база лидов — уже через 72 часа. Без кода, мучений и фрилансеров.</p>
+    <a href="#sayme">
+      <button class="glow-button">Получить MVP</button>
+    </a>
+  </header>
+
+  <section class="features">
+    <div class="feature" data-aos="fade-up" data-aos-delay="100">
+      <h3>⚡ Быстро</h3>
+      <p>Всё работает через 2–3 дня. Ты сразу получаешь заявки.</p>
+    </div>
+    <div class="feature" data-aos="fade-up" data-aos-delay="200">
+      <h3>🔧 Без кода</h3>
+      <p>Никаких технических знаний. Я всё настрою за тебя.</p>
+    </div>
+    <div class="feature" data-aos="fade-up" data-aos-delay="300">
+      <h3>🎯 Под ключ</h3>
+      <p>Готовый результат — не «конструктор», а рабочая система.</p>
+    </div>
+  </section>
+
+  <section id="sayme" class="telegram-widget" data-aos="fade-up">
+    <h2>👇 Напиши прямо сейчас 👇</h2>
+    <iframe src="https://t.me/easy_mvp/6?embed=1" width="350" height="500" frameborder="0"></iframe>
+  </section>
+
+  <footer>
+    Сейчас беру 3 проекта бесплатно или по спеццене за отзыв. Пиши в Telegram 👉 @rk_syb
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+    gsap.from("h1", { duration: 1.5, y: -100, opacity: 0, ease: "power3.out" });
+  </script>
+</body>
+</html>
