@@ -205,158 +205,138 @@
     AOS.init();
     gsap.from("h1", { duration: 1.5, y: -100, opacity: 0, ease: "power3.out" });
   </script>
-<canvas id="bgCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
+	<canvas id="bgCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
+	<script>
+	const canvas = document.getElementById('bgCanvas');
+	const ctx = canvas.getContext('2d');
+	let width, height;
+	resize();
+	window.addEventListener('resize', resize);
 
-<script>
-const canvas = document.getElementById('bgCanvas');
-const ctx = canvas.getContext('2d');
-let width, height;
-resize();
-window.addEventListener('resize', resize);
+	function resize() {
+	width = canvas.width = window.innerWidth;
+	height = canvas.height = window.innerHeight;
+	}
 
-function resize() {
-  width = canvas.width = window.innerWidth;
-  height = canvas.height = window.innerHeight;
-}
+	const styles = ['dots', 'glowgrid', 'parallax'];
+	const selected = styles[Math.floor(Math.random() * styles.length)];
+	console.log('BG Style:', selected);
 
-// ---------- RANDOM STYLE SWITCH ----------
-const styles = ['constellation', 'matrix', 'grid', 'particles', 'waves'];
-const selected = styles[Math.floor(Math.random() * styles.length)];
-console.log('Background style:', selected);
+	// Mouse tracking
+	let mouse = { x: -1000, y: -1000 };
+	window.addEventListener('mousemove', e => {
+	mouse.x = e.clientX;
+	mouse.y = e.clientY;
+	});
 
-if (selected === 'constellation') startConstellation();
-else if (selected === 'matrix') startMatrix();
-else if (selected === 'grid') startGrid();
-else if (selected === 'particles') startParticles();
-else if (selected === 'waves') startWaves();
+	// === Style 1: Reactive Dots ===
+	function dots() {
+	let dots = Array.from({length: 70}, () => ({
+		x: Math.random()*width,
+		y: Math.random()*height,
+		vx: (Math.random() - 0.5)*0.3,
+		vy: (Math.random() - 0.5)*0.3
+	}));
 
-// ---------- CONSTELLATION ----------
-function startConstellation() {
-  let points = Array.from({ length: 80 }, () => ({
-    x: Math.random() * width,
-    y: Math.random() * height,
-    vx: (Math.random() - 0.5) * 0.5,
-    vy: (Math.random() - 0.5) * 0.5
-  }));
+	function draw() {
+		ctx.clearRect(0, 0, width, height);
+		for (let d of dots) {
+		d.x += d.vx;
+		d.y += d.vy;
 
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-    for (let p of points) {
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < 0 || p.x > width) p.vx *= -1;
-      if (p.y < 0 || p.y > height) p.vy *= -1;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI);
-      ctx.fillStyle = '#00f0ff';
-      ctx.fill();
-    }
-    for (let i = 0; i < points.length; i++) {
-      for (let j = i + 1; j < points.length; j++) {
-        const a = points[i], b = points[j];
-        const dist = Math.hypot(a.x - b.x, a.y - b.y);
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(0, 255, 255, ${1 - dist / 120})`;
-          ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
+		if (d.x < 0 || d.x > width) d.vx *= -1;
+		if (d.y < 0 || d.y > height) d.vy *= -1;
 
-// ---------- MATRIX ----------
-function startMatrix() {
-  const cols = Math.floor(width / 20);
-  const yPos = Array(cols).fill(0);
-  const charset = '01';
+		let dist = Math.hypot(d.x - mouse.x, d.y - mouse.y);
+		let repel = dist < 100 ? 1 - dist / 100 : 0;
+		if (repel > 0) {
+			d.x += (d.x - mouse.x) * repel * 0.1;
+			d.y += (d.y - mouse.y) * repel * 0.1;
+		}
 
-  function draw() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-    ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = '#00ff00';
-    ctx.font = '16px monospace';
-    yPos.forEach((y, index) => {
-      const text = charset[Math.floor(Math.random() * charset.length)];
-      const x = index * 20;
-      ctx.fillText(text, x, y);
-      yPos[index] = y > height + Math.random() * 100 ? 0 : y + 20;
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
+		ctx.beginPath();
+		ctx.arc(d.x, d.y, 2, 0, 2 * Math.PI);
+		ctx.fillStyle = '#00f0ff';
+		ctx.fill();
+		}
 
-// ---------- GRID ----------
-function startGrid() {
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-    const spacing = 40;
-    for (let x = 0; x < width; x += spacing) {
-      for (let y = 0; y < height; y += spacing) {
-        const pulse = Math.sin((Date.now() + x + y) / 400);
-        ctx.beginPath();
-        ctx.arc(x, y, 2 + pulse * 2, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(0, 200, 255, ${0.4 + pulse * 0.3})`;
-        ctx.fill();
-      }
-    }
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
+		for (let i = 0; i < dots.length; i++) {
+		for (let j = i + 1; j < dots.length; j++) {
+			let a = dots[i], b = dots[j];
+			let dist = Math.hypot(a.x - b.x, a.y - b.y);
+			if (dist < 100) {
+			ctx.beginPath();
+			ctx.moveTo(a.x, a.y);
+			ctx.lineTo(b.x, b.y);
+			ctx.strokeStyle = `rgba(0,255,255,${1 - dist/100})`;
+			ctx.stroke();
+			}
+		}
+		}
+		requestAnimationFrame(draw);
+	}
+	draw();
+	}
 
-// ---------- PARTICLES ----------
-function startParticles() {
-  let particles = Array.from({ length: 100 }, () => ({
-    x: Math.random() * width,
-    y: Math.random() * height,
-    r: Math.random() * 2 + 1,
-    a: Math.random() * 2 * Math.PI,
-    s: Math.random() * 0.5 + 0.2
-  }));
+	// === Style 2: Glow Grid ===
+	function glowgrid() {
+	const spacing = 50;
+	const points = [];
 
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-    for (let p of particles) {
-      p.x += Math.cos(p.a) * p.s;
-      p.y += Math.sin(p.a) * p.s;
-      if (p.x < 0 || p.x > width || p.y < 0 || p.y > height) {
-        p.x = Math.random() * width;
-        p.y = Math.random() * height;
-      }
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
-      ctx.fillStyle = 'rgba(0,255,200,0.5)';
-      ctx.fill();
-    }
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
+	for (let x = 0; x < width; x += spacing) {
+		for (let y = 0; y < height; y += spacing) {
+		points.push({x, y});
+		}
+	}
 
-// ---------- WAVES ----------
-function startWaves() {
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-    ctx.beginPath();
-    ctx.moveTo(0, height / 2);
-    for (let x = 0; x < width; x++) {
-      const y = height / 2 + Math.sin((x + Date.now() / 20) / 40) * 30;
-      ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = '#00caff';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
-</script>
+	function draw() {
+		ctx.clearRect(0, 0, width, height);
+		for (let p of points) {
+		let dist = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+		let glow = dist < 150 ? 1 - dist/150 : 0;
+
+		ctx.beginPath();
+		ctx.arc(p.x, p.y, 2 + glow * 4, 0, 2 * Math.PI);
+		ctx.fillStyle = `rgba(0,255,200,${0.3 + glow*0.7})`;
+		ctx.fill();
+		}
+		requestAnimationFrame(draw);
+	}
+	draw();
+	}
+
+	// === Style 3: Parallax Circles ===
+	function parallax() {
+	let circles = Array.from({length: 30}, () => ({
+		x: Math.random() * width,
+		y: Math.random() * height,
+		r: 10 + Math.random() * 20,
+		d: Math.random() * 2 + 0.5
+	}));
+
+	function draw() {
+		ctx.clearRect(0, 0, width, height);
+		for (let c of circles) {
+		let offsetX = (mouse.x - width/2) * c.d * 0.01;
+		let offsetY = (mouse.y - height/2) * c.d * 0.01;
+
+		ctx.beginPath();
+		ctx.arc(c.x + offsetX, c.y + offsetY, c.r, 0, 2 * Math.PI);
+		ctx.fillStyle = `rgba(0,200,255,0.1)`;
+		ctx.fill();
+		ctx.strokeStyle = `rgba(0,200,255,0.2)`;
+		ctx.stroke();
+		}
+		requestAnimationFrame(draw);
+	}
+	draw();
+	}
+
+	// === Launch Selected ===
+	if (selected === 'dots') dots();
+	if (selected === 'glowgrid') glowgrid();
+	if (selected === 'parallax') parallax();
+	</script>
 
 </body>
 </html>
