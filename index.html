@@ -103,12 +103,12 @@
       justify-content: center;
       gap: 30px;
       padding: 60px 20px;
-      background: #121212;
+      background: #121212ab;
     }
     .feature {
       flex: 1 1 250px;
       max-width: 300px;
-      background: #1e1e1e;
+      background: #1e1e1eab;
       padding: 30px;
       border-radius: 20px;
       text-align: center;
@@ -134,15 +134,13 @@
     footer {
       text-align: center;
       padding: 40px 20px;
-      background: #0f0f0f;
+      background: #0f0f0fab;
       font-size: 0.9rem;
       color: #777;
     }
   </style>
 </head>
 <body>
-	<canvas id="bgCanvas" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></canvas>
-
   <header data-aos="fade-down">
     <p style="color:#ff4d4d; font-weight: 600;">Ты хочешь запустить продукт, но не можешь начать?</p>
     <h1>🚀 MVP за 3 дня</h1>
@@ -170,7 +168,7 @@
     </div>
   </section>
 
-  <section class="features" style="background:#181818;">
+  <section class="features" style="background:#181818ab;">
     <div class="feature" data-aos="fade-up">
       <h3>📈 Было 0 — стало 14 за 2 дня</h3>
       <p>«Я даже не успел всё дочитать — заявки уже пошли»</p>
@@ -183,7 +181,7 @@
     </div>
   </section>
 
-  <section style="background:#1e1e1e; padding:40px 20px; text-align:center;">
+  <section style="background:#1e1e1eab; padding:40px 20px; text-align:center;">
     <h3 style="margin-bottom:10px;">⏳ Осталось 2 из 3 мест</h3>
     <p style="color:#aaa;">Успей попасть в спец-пакет за отзыв. Запись до <strong>пятницы 23:59</strong>.</p>
   </section>
@@ -207,64 +205,157 @@
     AOS.init();
     gsap.from("h1", { duration: 1.5, y: -100, opacity: 0, ease: "power3.out" });
   </script>
-  <script>
-	const canvas = document.getElementById('bgCanvas');
-	const ctx = canvas.getContext('2d');
-	let width, height;
-	let points = [];
+<canvas id="bgCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
 
-	function resize() {
-	width = canvas.width = window.innerWidth;
-	height = canvas.height = window.innerHeight;
-	}
-	resize();
-	window.addEventListener('resize', resize);
+<script>
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let width, height;
+resize();
+window.addEventListener('resize', resize);
 
-	function createPoints(num = 80) {
-	points = [];
-	for (let i = 0; i < num; i++) {
-		points.push({
-		x: Math.random() * width,
-		y: Math.random() * height,
-		vx: (Math.random() - 0.5) * 0.5,
-		vy: (Math.random() - 0.5) * 0.5
-		});
-	}
-	}
-	createPoints();
+function resize() {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+}
 
-	function draw() {
-	ctx.clearRect(0, 0, width, height);
-	for (let p of points) {
-		p.x += p.vx;
-		p.y += p.vy;
+// ---------- RANDOM STYLE SWITCH ----------
+const styles = ['constellation', 'matrix', 'grid', 'particles', 'waves'];
+const selected = styles[Math.floor(Math.random() * styles.length)];
+console.log('Background style:', selected);
 
-		if (p.x < 0 || p.x > width) p.vx *= -1;
-		if (p.y < 0 || p.y > height) p.vy *= -1;
+if (selected === 'constellation') startConstellation();
+else if (selected === 'matrix') startMatrix();
+else if (selected === 'grid') startGrid();
+else if (selected === 'particles') startParticles();
+else if (selected === 'waves') startWaves();
 
-		ctx.beginPath();
-		ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-		ctx.fillStyle = '#00f0ff';
-		ctx.fill();
-	}
+// ---------- CONSTELLATION ----------
+function startConstellation() {
+  let points = Array.from({ length: 80 }, () => ({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5
+  }));
 
-	for (let i = 0; i < points.length; i++) {
-		for (let j = i + 1; j < points.length; j++) {
-		let a = points[i], b = points[j];
-		let dist = Math.hypot(a.x - b.x, a.y - b.y);
-		if (dist < 120) {
-			ctx.beginPath();
-			ctx.moveTo(a.x, a.y);
-			ctx.lineTo(b.x, b.y);
-			ctx.strokeStyle = `rgba(0, 255, 255, ${1 - dist / 120})`;
-			ctx.stroke();
-		}
-		}
-	}
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    for (let p of points) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > width) p.vx *= -1;
+      if (p.y < 0 || p.y > height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI);
+      ctx.fillStyle = '#00f0ff';
+      ctx.fill();
+    }
+    for (let i = 0; i < points.length; i++) {
+      for (let j = i + 1; j < points.length; j++) {
+        const a = points[i], b = points[j];
+        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(0, 255, 255, ${1 - dist / 120})`;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
 
-	requestAnimationFrame(draw);
-	}
-	draw();
+// ---------- MATRIX ----------
+function startMatrix() {
+  const cols = Math.floor(width / 20);
+  const yPos = Array(cols).fill(0);
+  const charset = '01';
+
+  function draw() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#00ff00';
+    ctx.font = '16px monospace';
+    yPos.forEach((y, index) => {
+      const text = charset[Math.floor(Math.random() * charset.length)];
+      const x = index * 20;
+      ctx.fillText(text, x, y);
+      yPos[index] = y > height + Math.random() * 100 ? 0 : y + 20;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ---------- GRID ----------
+function startGrid() {
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    const spacing = 40;
+    for (let x = 0; x < width; x += spacing) {
+      for (let y = 0; y < height; y += spacing) {
+        const pulse = Math.sin((Date.now() + x + y) / 400);
+        ctx.beginPath();
+        ctx.arc(x, y, 2 + pulse * 2, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(0, 200, 255, ${0.4 + pulse * 0.3})`;
+        ctx.fill();
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ---------- PARTICLES ----------
+function startParticles() {
+  let particles = Array.from({ length: 100 }, () => ({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    r: Math.random() * 2 + 1,
+    a: Math.random() * 2 * Math.PI,
+    s: Math.random() * 0.5 + 0.2
+  }));
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    for (let p of particles) {
+      p.x += Math.cos(p.a) * p.s;
+      p.y += Math.sin(p.a) * p.s;
+      if (p.x < 0 || p.x > width || p.y < 0 || p.y > height) {
+        p.x = Math.random() * width;
+        p.y = Math.random() * height;
+      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+      ctx.fillStyle = 'rgba(0,255,200,0.5)';
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ---------- WAVES ----------
+function startWaves() {
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    for (let x = 0; x < width; x++) {
+      const y = height / 2 + Math.sin((x + Date.now() / 20) / 40) * 30;
+      ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = '#00caff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
 </script>
 
 </body>
